@@ -42,6 +42,12 @@ body {
             <button class="btn btn-default dislike">Dislike</button>
             <span class="dislikes">0</span>
         </div>
+	<div class="rating" id="demo">
+            <button class="btn btn-default like">Like</button>
+            <span class="likes">0</span>
+            <button class="btn btn-default dislike">Dislike</button>
+            <span class="dislikes">0</span>
+        </div>
 
     </div>
 </div>
@@ -50,31 +56,35 @@ body {
 <script src="js/like-dislike.js"></script> 
 <script>
 $('#demo').likeDislike({
-  reverseMode: true,
-  activeBtn: localStorage['key']? localStorage['key'] : '',
-  click: function(btnType, likes, dislikes, event) {
-    var self = this;
+       reverseMode: true,
+        disabledClass: 'disable',
+        activeBtn: localStorage['key']? localStorage['key'] : '',
+        click: function (btnType, l, d, event) {
+            var self = this;
 
-    // lock the buttons
-    self.readOnly(true);
-
-    // send data to the server
-    $.ajax({
-      url: '/action',
-      type: 'GET',
-      data: 'id=1' + '&likes=' + likes + '&dislikes=' + dislikes,
-      success: function (data) {
-        // show new values
-        $(self).find('.likes').text(data.likes);
-        $(self).find('.dislikes').text(data.dislikes);
-        localStorage['key'] = btnType;
-
-        // unlock the buttons
-        self.readOnly(false);
-      }
-    });
-  }
-});
+            // lock the buttons
+            self.readOnly(true);
+            var myObj;
+            
+            
+            // send data to the server
+            $.ajax({
+              url: 'dislike.php',
+              type: 'POST',
+              data: 'id=1' + '&likes=' + l + '&dislikes=' + d,
+              success: function (data) {
+                // show new values
+                myObj = JSON.parse(data);
+                $(self.element).find('.likes').text(myObj.likes);
+                $(self.element).find('.dislikes').text(myObj.dislikes);
+                localStorage['key'] = btnType;
+                    
+                // unlock the buttons
+                self.readOnly(false);
+              }
+            });
+        }
+    });    
 	$('#rating2').likeDislike({
         reverseMode: true,
         disabledClass: 'disable',
